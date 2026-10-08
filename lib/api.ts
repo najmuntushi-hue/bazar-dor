@@ -29,7 +29,9 @@ function num(value: unknown): number {
   if (typeof value !== "string") return 0;
 
   const s = value
-    .replace(/[০-৯]/g, (d) => String("০১২৩৪৫৬৭৮৯".indexOf(d)))
+    .replace(/[০-৯]/g, (d) =>
+      String("০১২৩৪৫৬৭৮৯".indexOf(d))
+    )
     .replace(/[^\d.-]/g, "");
 
   return Number(s) || 0;
@@ -48,23 +50,27 @@ function list(json: any): any[] {
     "categories",
     "items",
     "results",
+    "value",
   ]) {
     if (Array.isArray(json[key])) {
       return json[key];
     }
   }
 
-  const firstArray = Object.values(json).find(Array.isArray);
+  const firstArray = Object.values(json).find(
+    (item): item is any[] => Array.isArray(item)
+  );
 
-  return (firstArray as any[]) ?? [];
+  return firstArray ?? [];
 }
 
 function toProduct(p: any): Product {
   const price = num(p.today);
-
   const change = num(p.change?.pct);
 
-  const rawMarkets = Array.isArray(p.markets) ? p.markets : [];
+  const rawMarkets = Array.isArray(p.markets)
+    ? p.markets
+    : [];
 
   const markets: Market[] = rawMarkets.map((m: any) => ({
     name: String(m.market ?? ""),
@@ -73,9 +79,12 @@ function toProduct(p: any): Product {
     ),
   }));
 
-  const marketPrices = rawMarkets
-    .flatMap((m: any) => [num(m.min), num(m.max)])
-    .filter((value) => value > 0);
+  const marketPrices: number[] = rawMarkets
+    .flatMap((m: any) => [
+      num(m.min),
+      num(m.max),
+    ])
+    .filter((value: number) => value > 0);
 
   const min =
     marketPrices.length > 0
@@ -87,24 +96,39 @@ function toProduct(p: any): Product {
       ? Math.max(...marketPrices)
       : price;
 
+  const total = marketPrices.reduce(
+    (sum: number, value: number) =>
+      sum + value,
+    0
+  );
+
   const avg =
     marketPrices.length > 0
       ? Math.round(
-          marketPrices.reduce((sum, value) => sum + value, 0) /
-            marketPrices.length
+          total / marketPrices.length
         )
       : price;
 
   return {
     id: String(p.id ?? ""),
     slug: String(p.slug ?? ""),
-    name: String(p.nameBn ?? p.name ?? ""),
-    emoji: String(p.image ?? p.categoryIcon ?? "🛒"),
+    name: String(
+      p.nameBn ?? p.name ?? ""
+    ),
+    emoji: String(
+      p.image ??
+        p.categoryIcon ??
+        "🛒"
+    ),
     unit: String(p.unit ?? "kg"),
-    category: String(p.category ?? ""),
+    category: String(
+      p.category ?? ""
+    ),
     price,
     change,
-    description: String(p.categoryNameBn ?? ""),
+    description: String(
+      p.categoryNameBn ?? ""
+    ),
     tags: [],
     min,
     max,
@@ -115,9 +139,21 @@ function toProduct(p: any): Product {
 
 function toCategory(c: any): Category {
   return {
-    slug: String(c.slug ?? c.id ?? ""),
-    name: String(c.nameBn ?? c.name ?? c.categoryNameBn ?? ""),
-    emoji: String(c.icon ?? c.image ?? c.categoryIcon ?? "🛒"),
+    slug: String(
+      c.slug ?? c.id ?? ""
+    ),
+    name: String(
+      c.nameBn ??
+        c.name ??
+        c.categoryNameBn ??
+        ""
+    ),
+    emoji: String(
+      c.icon ??
+        c.image ??
+        c.categoryIcon ??
+        "🛒"
+    ),
   };
 }
 
@@ -126,7 +162,9 @@ export async function getProducts(
 ): Promise<Product[]> {
   const json = await get(
     category
-      ? `/products?category=${encodeURIComponent(category)}`
+      ? `/products?category=${encodeURIComponent(
+          category
+        )}`
       : "/products"
   );
 
@@ -136,21 +174,29 @@ export async function getProducts(
 export async function getProduct(
   slug: string
 ): Promise<Product | null> {
-  const json = await get(`/products/${slug}`);
+  const json = await get(
+    `/products/${slug}`
+  );
 
   if (!json) return null;
 
   const item = Array.isArray(json)
     ? json[0]
-    : json.data ?? json.product ?? json;
+    : json.data ??
+      json.product ??
+      json.value ??
+      json;
 
-  return item && typeof item === "object"
+  return item &&
+    typeof item === "object"
     ? toProduct(item)
     : null;
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const json = await get("/categories");
+  const json = await get(
+    "/categories"
+  );
 
   return list(json).map(toCategory);
 }
@@ -158,15 +204,21 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategory(
   slug: string
 ): Promise<Category | null> {
-  const json = await get(`/categories/${slug}`);
+  const json = await get(
+    `/categories/${slug}`
+  );
 
   if (!json) return null;
 
   const item = Array.isArray(json)
     ? json[0]
-    : json.data ?? json.category ?? json;
+    : json.data ??
+      json.category ??
+      json.value ??
+      json;
 
-  return item && typeof item === "object"
+  return item &&
+    typeof item === "object"
     ? toCategory(item)
     : null;
 }
