@@ -1,4 +1,7 @@
-export type Market = { name: string; price: number };
+export type Market = {
+  name: string;
+  price: number;
+};
 
 export type Product = {
   id: string;
@@ -7,13 +10,25 @@ export type Product = {
   emoji: string;
   unit: string;
   category: string;
+
+  // Price information
   price: number;
-  change: number; // percent, + hole barse, - hole komse
+  yesterday: number;
+  lastWeek: number;
+  lastMonth: number;
+
+  // Percentage change
+  change: number; // + hole barse, - hole komse
+
   description: string;
   tags: string[];
+
+  // Market price range
   min: number;
   max: number;
   avg: number;
+
+  // Market-wise prices
   markets: Market[];
 };
 

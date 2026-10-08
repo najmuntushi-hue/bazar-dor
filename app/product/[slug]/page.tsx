@@ -26,9 +26,28 @@ export default async function ProductPage({
   const isUp = product.change > 0;
   const isDown = product.change < 0;
 
+  const priceHistory = [
+    {
+      label: "আজকের দাম",
+      price: product.price,
+    },
+    {
+      label: "গতকালের দাম",
+      price: product.yesterday,
+    },
+    {
+      label: "গত সপ্তাহের দাম",
+      price: product.lastWeek,
+    },
+    {
+      label: "গত মাসের দাম",
+      price: product.lastMonth,
+    },
+  ];
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      {/* Back */}
+      {/* Back Link */}
       <Link
         href={`/category/${product.category}`}
         className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
@@ -36,14 +55,14 @@ export default async function ProductPage({
         ← {product.description || "ক্যাটাগরিতে ফিরে যান"}
       </Link>
 
-      {/* Product Header */}
+      {/* Product Overview */}
       <section className="grid gap-6 lg:grid-cols-[280px_1fr]">
         {/* Product Icon */}
         <div className="flex min-h-[280px] items-center justify-center rounded-3xl bg-secondary text-8xl">
           {product.emoji}
         </div>
 
-        {/* Product Info */}
+        {/* Product Information */}
         <div className="rounded-3xl border border-base-300 bg-base-100 p-6 shadow-sm">
           <div className="mb-2 text-sm text-base-content/60">
             {product.description}
@@ -57,6 +76,7 @@ export default async function ProductPage({
             প্রতি {product.unit}
           </p>
 
+          {/* Current Price */}
           <div className="mt-6 flex flex-wrap items-end gap-4">
             <div>
               <p className="text-sm text-base-content/60">
@@ -68,6 +88,7 @@ export default async function ProductPage({
               </p>
             </div>
 
+            {/* Percentage Change */}
             <div
               className={`rounded-full px-3 py-1 text-sm font-semibold ${
                 isUp
@@ -78,16 +99,20 @@ export default async function ProductPage({
               }`}
             >
               {isUp ? "▲" : isDown ? "▼" : "—"}{" "}
-              {Math.abs(product.change).toLocaleString("bn-BD")}%
+              {Math.abs(product.change).toLocaleString(
+                "bn-BD"
+              )}
+              %
             </div>
           </div>
 
-          {/* Price Range */}
+          {/* Min / Average / Max */}
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             <div className="rounded-2xl bg-base-200 p-4">
               <p className="text-xs text-base-content/60">
                 সর্বনিম্ন
               </p>
+
               <p className="mt-1 text-lg font-bold">
                 {formatPrice(product.min)} টাকা
               </p>
@@ -97,6 +122,7 @@ export default async function ProductPage({
               <p className="text-xs text-base-content/60">
                 গড় দাম
               </p>
+
               <p className="mt-1 text-lg font-bold">
                 {formatPrice(product.avg)} টাকা
               </p>
@@ -106,6 +132,7 @@ export default async function ProductPage({
               <p className="text-xs text-base-content/60">
                 সর্বোচ্চ
               </p>
+
               <p className="mt-1 text-lg font-bold">
                 {formatPrice(product.max)} টাকা
               </p>
@@ -114,7 +141,41 @@ export default async function ProductPage({
         </div>
       </section>
 
-      {/* Market Prices */}
+      {/* Price History */}
+      <section className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold">
+            দামের ইতিহাস
+          </h2>
+
+          <p className="mt-1 text-sm text-base-content/60">
+            {product.name}-এর বিভিন্ন সময়ের বাজারদর
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {priceHistory.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm"
+            >
+              <p className="text-sm text-base-content/60">
+                {item.label}
+              </p>
+
+              <p className="mt-2 text-2xl font-bold text-primary">
+                {formatPrice(item.price)} টাকা
+              </p>
+
+              <p className="mt-1 text-xs text-base-content/50">
+                প্রতি {product.unit}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Market-wise Price */}
       <section className="mt-8">
         <div className="mb-4">
           <h2 className="text-2xl font-bold">
@@ -152,53 +213,6 @@ export default async function ProductPage({
             ))}
           </div>
         )}
-      </section>
-
-      {/* Price History */}
-      <section className="mt-8">
-        <h2 className="mb-4 text-2xl font-bold">
-          দামের ইতিহাস
-        </h2>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-base-300 p-5">
-            <p className="text-sm text-base-content/60">
-              আজ
-            </p>
-            <p className="mt-1 text-xl font-bold">
-              {formatPrice(product.price)} টাকা
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-base-300 p-5">
-            <p className="text-sm text-base-content/60">
-              গতকাল
-            </p>
-            <p className="mt-1 text-xl font-bold">
-              {formatPrice(
-                product.price - product.change
-              )} টাকা
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-base-300 p-5">
-            <p className="text-sm text-base-content/60">
-              গত সপ্তাহ
-            </p>
-            <p className="mt-1 text-xl font-bold">
-              বাজারদর
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-base-300 p-5">
-            <p className="text-sm text-base-content/60">
-              গত মাস
-            </p>
-            <p className="mt-1 text-xl font-bold">
-              বাজারদর
-            </p>
-          </div>
-        </div>
       </section>
     </main>
   );

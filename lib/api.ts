@@ -247,6 +247,10 @@ function getFallbackEmoji(
   return "🛒";
 }
 
+/* =========================
+   List Helper
+========================= */
+
 function list(json: any): any[] {
   if (Array.isArray(json)) {
     return json;
@@ -276,8 +280,19 @@ function list(json: any): any[] {
 
   return firstArray ?? [];
 }
+
+/* =========================
+   Product Mapper
+========================= */
+
 function toProduct(p: any): Product {
   const price = num(p.today);
+
+  const yesterday = num(p.yesterday);
+
+  const lastWeek = num(p.lastWeek);
+
+  const lastMonth = num(p.lastMonth);
 
   const change = num(
     p.change?.pct
@@ -350,6 +365,15 @@ function toProduct(p: any): Product {
   const category = String(
     p.category ?? ""
   );
+
+  /*
+   * API icon/image থাকলে
+   * সেটাই আগে নেওয়া হবে।
+   *
+   * API icon না থাকলে
+   * fallback emoji ব্যবহার হবে।
+   */
+
   const apiIcon =
     typeof p.image === "string" &&
     p.image.trim() !== ""
@@ -391,6 +415,12 @@ function toProduct(p: any): Product {
 
     price,
 
+    yesterday,
+
+    lastWeek,
+
+    lastMonth,
+
     change,
 
     description: String(
@@ -408,6 +438,11 @@ function toProduct(p: any): Product {
     markets,
   };
 }
+
+/* =========================
+   Category Mapper
+========================= */
+
 function toCategory(
   c: any
 ): Category {
@@ -433,6 +468,11 @@ function toCategory(
     ),
   };
 }
+
+/* =========================
+   Get Products
+========================= */
+
 export async function getProducts(
   category?: string
 ): Promise<Product[]> {
@@ -448,9 +488,23 @@ export async function getProducts(
     toProduct
   );
 }
+
+/* =========================
+   Get Single Product
+========================= */
+
 export async function getProduct(
   slug: string
 ): Promise<Product | null> {
+  /*
+   * API does not have:
+   *
+   * /products/:slug
+   *
+   * So we search products
+   * category by category.
+   */
+
   const categories =
     await getCategories();
 
@@ -473,6 +527,11 @@ export async function getProduct(
 
   return null;
 }
+
+/* =========================
+   Get Categories
+========================= */
+
 export async function getCategories(): Promise<Category[]> {
   const json = await get(
     "/categories"
@@ -482,6 +541,10 @@ export async function getCategories(): Promise<Category[]> {
     toCategory
   );
 }
+
+/* =========================
+   Get Single Category
+========================= */
 
 export async function getCategory(
   slug: string
