@@ -1,6 +1,6 @@
 ﻿import { notFound } from "next/navigation";
 import CategoryProducts from "@/components/CategoryProducts";
-import { getCategories, getCategory, getProducts } from "@/lib/api";
+import { getCategories, getProducts } from "@/lib/api";
 
 type Props = {
   params: Promise<{
@@ -8,30 +8,33 @@ type Props = {
   }>;
 };
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({
+  params,
+}: Props) {
   const { slug } = await params;
 
-  const [category, products] = await Promise.all([
-    getCategory(slug),
+  const [categories, products] = await Promise.all([
+    getCategories(),
     getProducts(slug),
   ]);
 
-  if (!category) {
-    const categories = await getCategories();
-    const found = categories.find((item) => item.slug === slug);
+  const category = categories.find(
+    (item) => item.slug === slug
+  );
 
-    if (!found) {
-      notFound();
-    }
+  if (!category) {
+    notFound();
   }
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8 rounded-3xl bg-secondary p-6">
-        <div className="mb-2 text-4xl">{category?.emoji || "🛒"}</div>
+        <div className="mb-2 text-4xl">
+          {category.emoji}
+        </div>
 
         <h1 className="text-2xl font-bold">
-          {category?.name || slug}
+          {category.name}
         </h1>
 
         <p className="mt-2 text-sm text-base-content/70">
