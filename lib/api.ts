@@ -23,10 +23,18 @@ async function get(path: string): Promise<any> {
   return null;
 }
 
-function num(value: unknown): number {
-  if (typeof value === "number") return value;
+/* =========================
+   Number Helper
+========================= */
 
-  if (typeof value !== "string") return 0;
+function num(value: unknown): number {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value !== "string") {
+    return 0;
+  }
 
   const s = value
     .replace(/[০-৯]/g, (d) =>
@@ -37,8 +45,212 @@ function num(value: unknown): number {
   return Number(s) || 0;
 }
 
+/* =========================
+   Emoji Fallback
+   Only used when API icon
+   is missing.
+========================= */
+
+function getFallbackEmoji(
+  name: string,
+  category: string
+): string {
+  const n = name
+    .trim()
+    .replace(/\s+/g, "");
+
+  /* ===== চাল ===== */
+
+  if (
+    n.includes("স্বর্ণমাছি") ||
+    n.includes("মিনিকেট") ||
+    n.includes("নাজির") ||
+    n.includes("বাটাম")
+  ) {
+    return "🍚";
+  }
+
+  /* ===== ডাল ===== */
+
+  if (
+    n.includes("আমনডাল") ||
+    n.includes("আমন") ||
+    n.includes("মসুরডাল") ||
+    n.includes("মসুর") ||
+    n.includes("মুগডাল") ||
+    n.includes("মুগ") ||
+    n.includes("ছোলা") ||
+    n.includes("চোলা")
+  ) {
+    return "🫘";
+  }
+
+  /* ===== তেল ===== */
+
+  if (
+    n.includes("ঘানিভাঙাসরিষারতেল") ||
+    n.includes("ঘানিভাঙাসরিষাতেল") ||
+    n.includes("সরিষারতেল") ||
+    n.includes("সরিষাতেল")
+  ) {
+    return "🫗";
+  }
+
+  if (n.includes("পামতেল")) {
+    return "🫗";
+  }
+
+  /* ===== সবজি ===== */
+
+  if (n.includes("আলু")) {
+    return "🥔";
+  }
+
+  if (
+    n.includes("পেঁয়াজ") ||
+    n.includes("পেঁয়াজ")
+  ) {
+    return "🧅";
+  }
+
+  if (n.includes("কাঁচামরিচ")) {
+    return "🌶️";
+  }
+
+  if (n.includes("বেগুন")) {
+    return "🍆";
+  }
+
+  if (
+    n.includes("ঢেঁড়স") ||
+    n.includes("ঢেঁড়স")
+  ) {
+    return "🥬";
+  }
+
+  /* ===== মাছ ===== */
+
+  if (n.includes("রুই")) {
+    return "🐟";
+  }
+
+  if (
+    n.includes("তেলাপিয়া") ||
+    n.includes("তেলাপিয়া")
+  ) {
+    return "🐟";
+  }
+
+  if (n.includes("ইলিশ")) {
+    return "🐟";
+  }
+
+  if (n.includes("কাতলা")) {
+    return "🐟";
+  }
+
+  if (
+    n.includes("চিংড়ি") ||
+    n.includes("চিংড়ি")
+  ) {
+    return "🦐";
+  }
+
+  /* ===== মাংস ===== */
+
+  if (n.includes("মুরগি")) {
+    return "🍗";
+  }
+
+  if (n.includes("গরু")) {
+    return "🥩";
+  }
+
+  if (n.includes("খাসি")) {
+    return "🥩";
+  }
+
+  if (n.includes("হাঁস")) {
+    return "🦆";
+  }
+
+  /* ===== ডিম-দুধ ===== */
+
+  if (n.includes("ডিম")) {
+    return "🥚";
+  }
+
+  if (n.includes("দুধ")) {
+    return "🥛";
+  }
+
+  if (n.includes("দই")) {
+    return "🥣";
+  }
+
+  if (n.includes("মাখন")) {
+    return "🧈";
+  }
+
+  /* ===== মসলা ===== */
+
+  if (n.includes("আদা")) {
+    return "🫚";
+  }
+
+  if (n.includes("রসুন")) {
+    return "🧄";
+  }
+
+  if (n.includes("মরিচ")) {
+    return "🌶️";
+  }
+
+  if (n.includes("ধনে")) {
+    return "🌿";
+  }
+
+  /* ===== Category fallback ===== */
+
+  if (category === "chal") {
+    return "🍚";
+  }
+
+  if (category === "dal") {
+    return "🫘";
+  }
+
+  if (category === "tel") {
+    return "🫗";
+  }
+
+  if (category === "sobji") {
+    return "🥬";
+  }
+
+  if (category === "mach") {
+    return "🐟";
+  }
+
+  if (category === "mangsho") {
+    return "🍗";
+  }
+
+  if (category === "dim-dui") {
+    return "🥛";
+  }
+
+  if (category === "mosla") {
+    return "🌶️";
+  }
+
+  return "🛒";
+}
+
 function list(json: any): any[] {
-  if (Array.isArray(json)) return json;
+  if (Array.isArray(json)) {
+    return json;
+  }
 
   if (!json || typeof json !== "object") {
     return [];
@@ -58,96 +270,161 @@ function list(json: any): any[] {
   }
 
   const firstArray = Object.values(json).find(
-    (item): item is any[] => Array.isArray(item)
+    (item): item is any[] =>
+      Array.isArray(item)
   );
 
   return firstArray ?? [];
 }
-
 function toProduct(p: any): Product {
   const price = num(p.today);
-  const change = num(p.change?.pct);
 
-  const rawMarkets = Array.isArray(p.markets)
-    ? p.markets
-    : [];
+  const change = num(
+    p.change?.pct
+  );
 
-  const markets: Market[] = rawMarkets.map((m: any) => ({
-    name: String(m.market ?? ""),
-    price: Math.round(
-      (num(m.min) + num(m.max)) / 2
-    ),
-  }));
+  const rawMarkets =
+    Array.isArray(p.markets)
+      ? p.markets
+      : [];
 
-  const marketPrices: number[] = rawMarkets
-    .flatMap((m: any) => [
-      num(m.min),
-      num(m.max),
-    ])
-    .filter((value: number) => value > 0);
+  const markets: Market[] =
+    rawMarkets.map((m: any) => ({
+      name: String(
+        m.market ?? ""
+      ),
+
+      price: Math.round(
+        (num(m.min) +
+          num(m.max)) /
+          2
+      ),
+    }));
+
+  const marketPrices: number[] =
+    rawMarkets
+      .flatMap((m: any) => [
+        num(m.min),
+        num(m.max),
+      ])
+      .filter(
+        (value: number) =>
+          value > 0
+      );
 
   const min =
     marketPrices.length > 0
-      ? Math.min(...marketPrices)
+      ? Math.min(
+          ...marketPrices
+        )
       : price;
 
   const max =
     marketPrices.length > 0
-      ? Math.max(...marketPrices)
+      ? Math.max(
+          ...marketPrices
+        )
       : price;
 
-  const total = marketPrices.reduce(
-    (sum: number, value: number) =>
-      sum + value,
-    0
-  );
+  const total =
+    marketPrices.reduce(
+      (sum: number, value: number) =>
+        sum + value,
+      0
+    );
 
   const avg =
     marketPrices.length > 0
       ? Math.round(
-          total / marketPrices.length
+          total /
+            marketPrices.length
         )
       : price;
 
+  const name = String(
+    p.nameBn ??
+      p.name ??
+      ""
+  );
+
+  const category = String(
+    p.category ?? ""
+  );
+  const apiIcon =
+    typeof p.image === "string" &&
+    p.image.trim() !== ""
+      ? p.image.trim()
+      : typeof p.icon === "string" &&
+          p.icon.trim() !== ""
+        ? p.icon.trim()
+        : typeof p.emoji === "string" &&
+            p.emoji.trim() !== ""
+          ? p.emoji.trim()
+          : "";
+
+  const emoji =
+    apiIcon !== ""
+      ? apiIcon
+      : getFallbackEmoji(
+          name,
+          category
+        );
+
   return {
-    id: String(p.id ?? ""),
-    slug: String(p.slug ?? ""),
-    name: String(
-      p.nameBn ?? p.name ?? ""
+    id: String(
+      p.id ?? ""
     ),
-    emoji: String(
-      p.image ??
-        p.categoryIcon ??
-        "🛒"
+
+    slug: String(
+      p.slug ?? ""
     ),
-    unit: String(p.unit ?? "kg"),
-    category: String(
-      p.category ?? ""
+
+    name,
+
+    emoji,
+
+    unit: String(
+      p.unit ?? "kg"
     ),
+
+    category,
+
     price,
+
     change,
+
     description: String(
       p.categoryNameBn ?? ""
     ),
+
     tags: [],
+
     min,
+
     max,
+
     avg,
+
     markets,
   };
 }
-
-function toCategory(c: any): Category {
+function toCategory(
+  c: any
+): Category {
   return {
     slug: String(
-      c.slug ?? c.id ?? ""
+      c.slug ??
+        c.id ??
+        ""
     ),
+
     name: String(
       c.nameBn ??
         c.name ??
         c.categoryNameBn ??
         ""
     ),
+
     emoji: String(
       c.icon ??
         c.image ??
@@ -156,7 +433,6 @@ function toCategory(c: any): Category {
     ),
   };
 }
-
 export async function getProducts(
   category?: string
 ): Promise<Product[]> {
@@ -168,57 +444,55 @@ export async function getProducts(
       : "/products"
   );
 
-  return list(json).map(toProduct);
+  return list(json).map(
+    toProduct
+  );
 }
-
 export async function getProduct(
   slug: string
 ): Promise<Product | null> {
-  const json = await get(
-    `/products/${slug}`
-  );
+  const categories =
+    await getCategories();
 
-  if (!json) return null;
+  for (const category of categories) {
+    const products =
+      await getProducts(
+        category.slug
+      );
 
-  const item = Array.isArray(json)
-    ? json[0]
-    : json.data ??
-      json.product ??
-      json.value ??
-      json;
+    const product =
+      products.find(
+        (item) =>
+          item.slug === slug
+      );
 
-  return item &&
-    typeof item === "object"
-    ? toProduct(item)
-    : null;
+    if (product) {
+      return product;
+    }
+  }
+
+  return null;
 }
-
 export async function getCategories(): Promise<Category[]> {
   const json = await get(
     "/categories"
   );
 
-  return list(json).map(toCategory);
+  return list(json).map(
+    toCategory
+  );
 }
 
 export async function getCategory(
   slug: string
 ): Promise<Category | null> {
-  const json = await get(
-    `/categories/${slug}`
+  const categories =
+    await getCategories();
+
+  return (
+    categories.find(
+      (item) =>
+        item.slug === slug
+    ) ?? null
   );
-
-  if (!json) return null;
-
-  const item = Array.isArray(json)
-    ? json[0]
-    : json.data ??
-      json.category ??
-      json.value ??
-      json;
-
-  return item &&
-    typeof item === "object"
-    ? toCategory(item)
-    : null;
 }
