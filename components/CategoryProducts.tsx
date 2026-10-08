@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
@@ -6,13 +6,24 @@ import SortDropdown, { type SortValue } from "./SortDropdown";
 import { toBn } from "@/lib/bn";
 import type { Product } from "@/lib/types";
 
-export default function CategoryProducts({ products }: { products: Product[] }) {
+export default function CategoryProducts({
+  products,
+}: {
+  products: Product[];
+}) {
   const [sort, setSort] = useState<SortValue>("default");
 
   const sorted = useMemo(() => {
     const list = [...products];
-    if (sort === "asc") list.sort((a, b) => a.price - b.price);
-    if (sort === "desc") list.sort((a, b) => b.price - a.price);
+
+    if (sort === "asc") {
+      list.sort((a, b) => a.price - b.price);
+    }
+
+    if (sort === "desc") {
+      list.sort((a, b) => b.price - a.price);
+    }
+
     return list;
   }, [products, sort]);
 
@@ -26,11 +37,17 @@ export default function CategoryProducts({ products }: { products: Product[] }) 
         মোট {toBn(sorted.length)}টি পণ্য দেখানো হচ্ছে
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {sorted.map((p) => (
-          <ProductCard key={p.slug} product={p} />
-        ))}
-      </div>
+      {sorted.length === 0 ? (
+        <div className="rounded-2xl border border-base-300 bg-base-200 p-8 text-center">
+          <p className="font-medium">এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি।</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {sorted.map((p) => (
+            <ProductCard key={p.slug} product={p} />
+          ))}
+        </div>
+      )}
     </>
   );
 }
