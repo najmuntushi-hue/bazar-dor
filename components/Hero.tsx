@@ -1,6 +1,14 @@
-import { bnDate } from "@/lib/bn";
 
-export default function Hero() {
+import Link from "next/link";
+import { bnDate, bnNumber } from "@/lib/bn";
+import { getCategories, getProducts } from "@/lib/api";
+
+export default async function Hero() {
+  const [categories, products] = await Promise.all([
+    getCategories(),
+    getProducts(),
+  ]);
+
   return (
     <section className="mt-6 grid items-center gap-6 rounded-3xl border border-base-300 bg-base-200 p-6 md:grid-cols-2 md:p-10">
       {/* Hero Content */}
@@ -22,14 +30,13 @@ export default function Hero() {
           দামের পরিবর্তন এক জায়গায়।
         </p>
 
-        <a href="#সব-পণ্য" className="btn btn-primary mt-5">
+        <Link href="#সব-পণ্য" className="btn btn-primary mt-5">
           সব পণ্য দেখুন
-        </a>
+        </Link>
       </div>
 
       {/* Image and Statistics */}
       <div className="flex items-center justify-center gap-3 sm:gap-5">
-        {/* Market Basket */}
         <div
           className="text-6xl sm:text-7xl"
           aria-hidden="true"
@@ -37,10 +44,11 @@ export default function Hero() {
           🧺🍅
         </div>
 
-        {/* Statistics Cards */}
         <div className="grid flex-1 gap-2">
           <div className="rounded-xl border border-base-300 bg-base-100 p-3">
-            <h2 className="text-2xl font-bold">৩৩</h2>
+            <h2 className="text-2xl font-bold">
+              {bnNumber(products.length)}
+            </h2>
             <p className="text-xs text-base-content/70 sm:text-sm">
               টি নিত্যদিনের পণ্য
             </p>
@@ -54,7 +62,9 @@ export default function Hero() {
           </div>
 
           <div className="rounded-xl border border-base-300 bg-base-100 p-3">
-            <h2 className="text-2xl font-bold">৬</h2>
+            <h2 className="text-2xl font-bold">
+              {bnNumber(categories.length)}
+            </h2>
             <p className="text-xs text-base-content/70 sm:text-sm">
               টি বিভাগ
             </p>
@@ -64,4 +74,3 @@ export default function Hero() {
     </section>
   );
 }
-
