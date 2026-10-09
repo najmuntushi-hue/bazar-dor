@@ -103,7 +103,8 @@ Open http://localhost:3000 in your browser.
 
 **Najmun Nahar**
 
-* GitHub: [@najmuntushi-hue](https://github.com/najmuntushi-hue)
+* GitHub link: [@najmuntushi-hue](https://github.com/najmuntushi-hue)
+* live link:https://bazar-dor-liart.vercel.app/
 
 ## 📄 License
 
