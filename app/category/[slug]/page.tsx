@@ -1,4 +1,5 @@
-﻿import { notFound } from "next/navigation";
+﻿
+import { notFound } from "next/navigation";
 import CategoryProducts from "@/components/CategoryProducts";
 import { getCategories, getProducts } from "@/lib/api";
 
@@ -29,15 +30,14 @@ export default async function CategoryPage({
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8 rounded-3xl bg-secondary p-6">
-        <div className="mb-2 text-4xl">
-          {category.emoji}
-        </div>
-
-        <h1 className="text-2xl font-bold">
-          {category.name}
+        <h1 className="flex items-center gap-3 text-2xl font-bold sm:text-3xl">
+          <span aria-hidden="true">
+            {category.emoji || "🛒"}
+          </span>
+          <span>{category.name}</span>
         </h1>
 
-        <p className="mt-2 text-sm text-base-content/70">
+        <p className="mt-3 text-sm text-base-content/70">
           এই ক্যাটাগরির বাজারদর ও পণ্যের তথ্য দেখুন।
         </p>
       </div>
