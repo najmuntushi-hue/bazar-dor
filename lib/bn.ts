@@ -17,22 +17,56 @@ export function bnDate(date: Date = new Date()): string {
     year: "numeric",
     timeZone: "Asia/Dhaka",
   }).formatToParts(date);
+
   const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+
   return `${get("weekday")}, ${get("day")} ${get("month")}, ${get("year")}`;
 }
 
-/** "প্রতি কেজি" (prefix na thakle jure dey) */
-export const unitLabel = (u: string): string =>
-  u.startsWith("প্রতি") ? u : `প্রতি ${u}`;
+/** English unit -> Bangla unit */
+const UNIT_MAP: Record<string, string> = {
+  kg: "কেজি",
+  kilogram: "কেজি",
+  kilograms: "কেজি",
+  litre: "লিটার",
+  liter: "লিটার",
+  liters: "লিটার",
+  litres: "লিটার",
+  dozen: "ডজন",
+  piece: "পিস",
+  pieces: "পিস",
+};
 
-/** "কেজি" (ticker er jonno) */
-export const unitShort = (u: string): string => u.replace(/^প্রতি\s*/, "");
+/** "প্রতি কেজি" */
+export const unitLabel = (u: string): string => {
+  const normalized = u.trim().toLowerCase();
+  const unit = UNIT_MAP[normalized] ?? u.trim().replace(/^প্রতি\s*/, "");
 
-/** Badge er arrow, text, color */
+  return `প্রতি ${unit}`;
+};
+
+/** "কেজি" — ticker-এর জন্য */
+export const unitShort = (u: string): string => {
+  const normalized = u.trim().toLowerCase().replace(/^প্রতি\s*/, "");
+
+  return UNIT_MAP[normalized] ?? normalized;
+};
+
+/** Badge-এর arrow, text, color */
 export function changeMeta(change: number) {
   const text = `${toBn(Math.abs(change).toFixed(1))}%`;
-  // Figma te dam barle LAL, komle SOBUJ. Ulta korte chaile ei duto class swap koro.
-  if (change > 0) return { arrow: "▲", text, cls: "text-error bg-error/10" };
-  if (change < 0) return { arrow: "▼", text, cls: "text-success bg-success/10" };
-  return { arrow: "—", text: "০.০%", cls: "text-base-content/60 bg-base-300/60" };
+
+  if (change > 0) {
+    return { arrow: "▲", text, cls: "text-error bg-error/10" };
+  }
+
+  if (change < 0) {
+    return { arrow: "▼", text, cls: "text-success bg-success/10" };
+  }
+
+  return {
+    arrow: "—",
+    text: "০.০%",
+    cls: "text-base-content/60 bg-base-300/60",
+  };
 }
