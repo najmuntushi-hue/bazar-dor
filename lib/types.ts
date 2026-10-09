@@ -1,5 +1,9 @@
+
 export type Market = {
   name: string;
+  division: string;
+  min: number;
+  max: number;
   price: number;
 };
 
@@ -17,13 +21,13 @@ export type Product = {
   lastWeek: number;
   lastMonth: number;
 
-  // Percentage change
-  change: number; // + hole barse, - hole komse
+  // Percentage change: positive = increased, negative = decreased
+  change: number;
 
   description: string;
   tags: string[];
 
-  // Market price range
+  // Overall market price range
   min: number;
   max: number;
   avg: number;

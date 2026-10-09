@@ -26,9 +26,7 @@ export default function Navbar({
       return;
     }
 
-    router.push(
-      `/search?q=${encodeURIComponent(query)}`
-    );
+    router.push(`/search?q=${encodeURIComponent(query)}`);
   }
 
   return (
@@ -64,16 +62,12 @@ export default function Navbar({
           className="order-3 flex w-full flex-1 md:order-2 md:max-w-md"
         >
           <div className="flex w-full items-center overflow-hidden rounded-xl border border-base-300 bg-base-100 focus-within:border-primary">
-            <span className="px-3 text-lg">
-              🔎
-            </span>
+            <span className="px-3 text-lg">🔎</span>
 
             <input
               type="search"
               value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="পণ্যের নাম লিখে খুঁজুন..."
               className="w-full bg-transparent px-1 py-2.5 text-sm outline-none"
             />

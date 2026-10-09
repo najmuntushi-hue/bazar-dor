@@ -1,3 +1,4 @@
+
 import Hero from "@/components/Hero";
 import Ticker from "@/components/Ticker";
 import ProductCard from "@/components/ProductCard";
@@ -8,33 +9,25 @@ import { bnNumber } from "@/lib/bn";
 export default async function Home() {
   const products = await getProducts();
 
-  // Top 6 products whose price increased the most
-  const risers = products
-    .filter((product) => product.change > 0)
+  const risers = [...products]
+    .filter((p) => p.change > 0)
     .sort((a, b) => b.change - a.change)
     .slice(0, 6);
 
-  // Top 6 products whose price decreased the most
-  const fallers = products
-    .filter((product) => product.change < 0)
+  const fallers = [...products]
+    .filter((p) => p.change < 0)
     .sort((a, b) => a.change - b.change)
     .slice(0, 6);
 
   return (
     <main className="mx-auto max-w-6xl px-4 pb-10">
-      {/* =========================
-          Hero Section
-      ========================== */}
+      {/* Hero Section */}
       <Hero />
 
-      {/* =========================
-          Price Ticker
-      ========================== */}
+      {/* Market Price Ticker */}
       <Ticker products={products} />
 
-      {/* =========================
-          Price Increased
-      ========================== */}
+      {/* Products with Increased Prices */}
       <ProductSection
         title="আজ দাম বেড়েছে"
         arrow="▲"
@@ -42,9 +35,7 @@ export default async function Home() {
         products={risers}
       />
 
-      {/* =========================
-          Price Decreased
-      ========================== */}
+      {/* Products with Decreased Prices */}
       <ProductSection
         title="আজ দাম কমেছে"
         arrow="▼"
@@ -52,9 +43,7 @@ export default async function Home() {
         products={fallers}
       />
 
-      {/* =========================
-          All Products
-      ========================== */}
+      {/* All Products */}
       <section
         id="সব-পণ্য"
         className="mt-12 scroll-mt-6"
@@ -64,7 +53,7 @@ export default async function Home() {
             সব পণ্য
           </h2>
 
-          <p className="mt-1 text-sm text-base-content/60">
+          <p className="mt-1 text-sm text-base-content/70">
             দৈনন্দিন প্রয়োজনীয় সব পণ্যের বর্তমান বাজারদর
           </p>
 
@@ -73,26 +62,24 @@ export default async function Home() {
           </p>
         </div>
 
-        {/* Empty State */}
         {products.length === 0 ? (
-          <div className="rounded-2xl border border-base-300 bg-base-200 p-8 text-center">
-            <div className="text-4xl">😕</div>
+          <div className="rounded-2xl border border-base-300 p-8 text-center">
+            <p className="text-3xl">🛒</p>
 
-            <h3 className="mt-3 font-semibold">
+            <h3 className="mt-3 text-lg font-bold">
               কোনো পণ্য পাওয়া যায়নি
             </h3>
 
             <p className="mt-1 text-sm text-base-content/60">
-              ডেটা লোড করা যায়নি। একটু পরে আবার চেষ্টা করুন।
+              কিছুক্ষণ পর আবার চেষ্টা করো।
             </p>
           </div>
         ) : (
-          /* Product Grid */
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {products.map((product) => (
+            {products.map((p) => (
               <ProductCard
-                key={product.slug}
-                product={product}
+                key={p.slug}
+                product={p}
               />
             ))}
           </div>

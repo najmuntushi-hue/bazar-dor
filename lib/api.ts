@@ -1,4 +1,5 @@
-﻿import type { Category, Market, Product } from "./types";
+﻿
+import type { Category, Market, Product } from "./types";
 
 const BASES = [
   "https://api.abcz.workers.dev/api/bazardor",
@@ -29,7 +30,7 @@ async function get(path: string): Promise<any> {
 
 function num(value: unknown): number {
   if (typeof value === "number") {
-    return value;
+    return Number.isFinite(value) ? value : 0;
   }
 
   if (typeof value !== "string") {
@@ -42,69 +43,50 @@ function num(value: unknown): number {
     )
     .replace(/[^\d.-]/g, "");
 
-  return Number(s) || 0;
+  const result = Number(s);
+  return Number.isFinite(result) ? result : 0;
 }
 
 /* =========================
    Emoji Fallback
-   Only used when API icon
-   is missing.
 ========================= */
 
 function getFallbackEmoji(
   name: string,
   category: string
 ): string {
-  const n = name
-    .trim()
-    .replace(/\s+/g, "");
-
-  /* ===== চাল ===== */
+  const n = name.trim().replace(/\s+/g, "");
 
   if (
     n.includes("স্বর্ণমাছি") ||
     n.includes("মিনিকেট") ||
     n.includes("নাজির") ||
-    n.includes("বাটাম")
+    n.includes("বাটাম") ||
+    category === "chal"
   ) {
     return "🍚";
   }
 
-  /* ===== ডাল ===== */
-
   if (
-    n.includes("আমনডাল") ||
+    n.includes("ডাল") ||
     n.includes("আমন") ||
-    n.includes("মসুরডাল") ||
     n.includes("মসুর") ||
-    n.includes("মুগডাল") ||
     n.includes("মুগ") ||
     n.includes("ছোলা") ||
-    n.includes("চোলা")
+    n.includes("চোলা") ||
+    category === "dal"
   ) {
     return "🫘";
   }
 
-  /* ===== তেল ===== */
-
   if (
-    n.includes("ঘানিভাঙাসরিষারতেল") ||
-    n.includes("ঘানিভাঙাসরিষাতেল") ||
-    n.includes("সরিষারতেল") ||
-    n.includes("সরিষাতেল")
+    n.includes("তেল") ||
+    category === "tel"
   ) {
     return "🫗";
   }
 
-  if (n.includes("পামতেল")) {
-    return "🫗";
-  }
-
-  /* ===== সবজি ===== */
-
-  if (n.includes("আলু")) {
-    return "🥔";
-  }
+  if (n.includes("আলু")) return "🥔";
 
   if (
     n.includes("পেঁয়াজ") ||
@@ -113,40 +95,21 @@ function getFallbackEmoji(
     return "🧅";
   }
 
-  if (n.includes("কাঁচামরিচ")) {
+  if (
+    n.includes("মরিচ") ||
+    category === "mosla"
+  ) {
     return "🌶️";
   }
 
-  if (n.includes("বেগুন")) {
-    return "🍆";
-  }
+  if (n.includes("বেগুন")) return "🍆";
 
   if (
     n.includes("ঢেঁড়স") ||
-    n.includes("ঢেঁড়স")
+    n.includes("ঢেঁড়স") ||
+    category === "sobji"
   ) {
     return "🥬";
-  }
-
-  /* ===== মাছ ===== */
-
-  if (n.includes("রুই")) {
-    return "🐟";
-  }
-
-  if (
-    n.includes("তেলাপিয়া") ||
-    n.includes("তেলাপিয়া")
-  ) {
-    return "🐟";
-  }
-
-  if (n.includes("ইলিশ")) {
-    return "🐟";
-  }
-
-  if (n.includes("কাতলা")) {
-    return "🐟";
   }
 
   if (
@@ -156,93 +119,40 @@ function getFallbackEmoji(
     return "🦐";
   }
 
-  /* ===== মাংস ===== */
-
-  if (n.includes("মুরগি")) {
-    return "🍗";
-  }
-
-  if (n.includes("গরু")) {
-    return "🥩";
-  }
-
-  if (n.includes("খাসি")) {
-    return "🥩";
-  }
-
-  if (n.includes("হাঁস")) {
-    return "🦆";
-  }
-
-  /* ===== ডিম-দুধ ===== */
-
-  if (n.includes("ডিম")) {
-    return "🥚";
-  }
-
-  if (n.includes("দুধ")) {
-    return "🥛";
-  }
-
-  if (n.includes("দই")) {
-    return "🥣";
-  }
-
-  if (n.includes("মাখন")) {
-    return "🧈";
-  }
-
-  /* ===== মসলা ===== */
-
-  if (n.includes("আদা")) {
-    return "🫚";
-  }
-
-  if (n.includes("রসুন")) {
-    return "🧄";
-  }
-
-  if (n.includes("মরিচ")) {
-    return "🌶️";
-  }
-
-  if (n.includes("ধনে")) {
-    return "🌿";
-  }
-
-  /* ===== Category fallback ===== */
-
-  if (category === "chal") {
-    return "🍚";
-  }
-
-  if (category === "dal") {
-    return "🫘";
-  }
-
-  if (category === "tel") {
-    return "🫗";
-  }
-
-  if (category === "sobji") {
-    return "🥬";
-  }
-
-  if (category === "mach") {
+  if (
+    n.includes("রুই") ||
+    n.includes("তেলাপিয়া") ||
+    n.includes("তেলাপিয়া") ||
+    n.includes("ইলিশ") ||
+    n.includes("কাতলা") ||
+    category === "mach"
+  ) {
     return "🐟";
   }
 
-  if (category === "mangsho") {
+  if (
+    n.includes("মুরগি") ||
+    category === "mangsho"
+  ) {
     return "🍗";
   }
 
-  if (category === "dim-dui") {
-    return "🥛";
+  if (
+    n.includes("গরু") ||
+    n.includes("খাসি")
+  ) {
+    return "🥩";
   }
 
-  if (category === "mosla") {
-    return "🌶️";
-  }
+  if (n.includes("হাঁস")) return "🦆";
+  if (n.includes("ডিম")) return "🥚";
+  if (n.includes("দুধ")) return "🥛";
+  if (n.includes("দই")) return "🥣";
+  if (n.includes("মাখন")) return "🧈";
+  if (n.includes("আদা")) return "🫚";
+  if (n.includes("রসুন")) return "🧄";
+
+  if (category === "dim-dui") return "🥛";
 
   return "🛒";
 }
@@ -274,11 +184,48 @@ function list(json: any): any[] {
   }
 
   const firstArray = Object.values(json).find(
-    (item): item is any[] =>
-      Array.isArray(item)
+    (item): item is any[] => Array.isArray(item)
   );
 
   return firstArray ?? [];
+}
+
+/* =========================
+   Market Mapper
+========================= */
+
+function toMarket(m: any): Market {
+  const min = num(m.min);
+  const max = num(m.max);
+
+  // Use the middle of the actual min/max range.
+  const price =
+    min > 0 && max > 0
+      ? Math.round((min + max) / 2)
+      : min > 0
+        ? min
+        : max;
+
+  return {
+    name: String(
+      m.market ?? m.marketNameBn ?? m.marketName ?? m.name ?? ""
+    ),
+
+    // Read the division only if the API provides it.
+    division: String(
+      m.divisionBn ??
+        m.divisionNameBn ??
+        m.divisionName ??
+        m.division ??
+        m.regionBn ??
+        m.region ??
+        ""
+    ),
+
+    min,
+    max,
+    price,
+  };
 }
 
 /* =========================
@@ -287,154 +234,87 @@ function list(json: any): any[] {
 
 function toProduct(p: any): Product {
   const price = num(p.today);
-
   const yesterday = num(p.yesterday);
-
   const lastWeek = num(p.lastWeek);
-
   const lastMonth = num(p.lastMonth);
+  const change = num(p.change?.pct);
 
-  const change = num(
-    p.change?.pct
-  );
+  const rawMarkets = Array.isArray(p.markets)
+    ? p.markets
+    : [];
 
-  const rawMarkets =
-    Array.isArray(p.markets)
-      ? p.markets
-      : [];
+  const markets: Market[] = rawMarkets.map(toMarket);
 
-  const markets: Market[] =
-    rawMarkets.map((m: any) => ({
-      name: String(
-        m.market ?? ""
-      ),
+  // Only use positive market prices to calculate the range.
+  const marketMins = markets
+    .map((market) => market.min)
+    .filter((value) => value > 0);
 
-      price: Math.round(
-        (num(m.min) +
-          num(m.max)) /
-          2
-      ),
-    }));
+  const marketMaxs = markets
+    .map((market) => market.max)
+    .filter((value) => value > 0);
 
-  const marketPrices: number[] =
-    rawMarkets
-      .flatMap((m: any) => [
-        num(m.min),
-        num(m.max),
-      ])
-      .filter(
-        (value: number) =>
-          value > 0
-      );
+  const validMarketPrices = markets
+    .map((market) => market.price)
+    .filter((value) => value > 0);
 
   const min =
-    marketPrices.length > 0
-      ? Math.min(
-          ...marketPrices
-        )
+    marketMins.length > 0
+      ? Math.min(...marketMins)
       : price;
 
   const max =
-    marketPrices.length > 0
-      ? Math.max(
-          ...marketPrices
-        )
+    marketMaxs.length > 0
+      ? Math.max(...marketMaxs)
       : price;
-
-  const total =
-    marketPrices.reduce(
-      (sum: number, value: number) =>
-        sum + value,
-      0
-    );
 
   const avg =
-    marketPrices.length > 0
+    validMarketPrices.length > 0
       ? Math.round(
-          total /
-            marketPrices.length
+          validMarketPrices.reduce(
+            (sum, value) => sum + value,
+            0
+          ) / validMarketPrices.length
         )
       : price;
 
-  const name = String(
-    p.nameBn ??
-      p.name ??
-      ""
-  );
-
-  const category = String(
-    p.category ?? ""
-  );
-
-  /*
-   * API icon/image থাকলে
-   * সেটাই আগে নেওয়া হবে।
-   *
-   * API icon না থাকলে
-   * fallback emoji ব্যবহার হবে।
-   */
+  const name = String(p.nameBn ?? p.name ?? "");
+  const category = String(p.category ?? "");
 
   const apiIcon =
-    typeof p.image === "string" &&
-    p.image.trim() !== ""
-      ? p.image.trim()
-      : typeof p.icon === "string" &&
-          p.icon.trim() !== ""
+    typeof p.emoji === "string" && p.emoji.trim() !== ""
+      ? p.emoji.trim()
+      : typeof p.icon === "string" && p.icon.trim() !== ""
         ? p.icon.trim()
-        : typeof p.emoji === "string" &&
-            p.emoji.trim() !== ""
-          ? p.emoji.trim()
+        : typeof p.image === "string" &&
+            p.image.trim() !== "" &&
+            !p.image.trim().startsWith("http")
+          ? p.image.trim()
           : "";
 
   const emoji =
-    apiIcon !== ""
-      ? apiIcon
-      : getFallbackEmoji(
-          name,
-          category
-        );
+    apiIcon || getFallbackEmoji(name, category);
 
   return {
-    id: String(
-      p.id ?? ""
-    ),
-
-    slug: String(
-      p.slug ?? ""
-    ),
-
+    id: String(p.id ?? ""),
+    slug: String(p.slug ?? ""),
     name,
-
     emoji,
-
-    unit: String(
-      p.unit ?? "kg"
-    ),
-
+    unit: String(p.unit ?? "kg"),
     category,
 
     price,
-
     yesterday,
-
     lastWeek,
-
     lastMonth,
-
     change,
 
-    description: String(
-      p.categoryNameBn ?? ""
-    ),
-
+    description: String(p.categoryNameBn ?? ""),
     tags: [],
 
     min,
-
     max,
-
     avg,
-
     markets,
   };
 }
@@ -443,26 +323,18 @@ function toProduct(p: any): Product {
    Category Mapper
 ========================= */
 
-function toCategory(
-  c: any
-): Category {
+function toCategory(c: any): Category {
   return {
-    slug: String(
-      c.slug ??
-        c.id ??
-        ""
-    ),
-
+    slug: String(c.slug ?? c.id ?? ""),
     name: String(
       c.nameBn ??
         c.name ??
         c.categoryNameBn ??
         ""
     ),
-
     emoji: String(
       c.icon ??
-        c.image ??
+        c.emoji ??
         c.categoryIcon ??
         "🛒"
     ),
@@ -478,15 +350,11 @@ export async function getProducts(
 ): Promise<Product[]> {
   const json = await get(
     category
-      ? `/products?category=${encodeURIComponent(
-          category
-        )}`
+      ? `/products?category=${encodeURIComponent(category)}`
       : "/products"
   );
 
-  return list(json).map(
-    toProduct
-  );
+  return list(json).map(toProduct);
 }
 
 /* =========================
@@ -496,29 +364,26 @@ export async function getProducts(
 export async function getProduct(
   slug: string
 ): Promise<Product | null> {
-  /*
-   * API does not have:
-   *
-   * /products/:slug
-   *
-   * So we search products
-   * category by category.
-   */
+  // First try the complete product list.
+  const allProducts = await getProducts();
 
-  const categories =
-    await getCategories();
+  const found = allProducts.find(
+    (item) => item.slug === slug
+  );
+
+  if (found) {
+    return found;
+  }
+
+  // If necessary, search category by category.
+  const categories = await getCategories();
 
   for (const category of categories) {
-    const products =
-      await getProducts(
-        category.slug
-      );
+    const products = await getProducts(category.slug);
 
-    const product =
-      products.find(
-        (item) =>
-          item.slug === slug
-      );
+    const product = products.find(
+      (item) => item.slug === slug
+    );
 
     if (product) {
       return product;
@@ -533,13 +398,9 @@ export async function getProduct(
 ========================= */
 
 export async function getCategories(): Promise<Category[]> {
-  const json = await get(
-    "/categories"
-  );
+  const json = await get("/categories");
 
-  return list(json).map(
-    toCategory
-  );
+  return list(json).map(toCategory);
 }
 
 /* =========================
@@ -549,13 +410,9 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategory(
   slug: string
 ): Promise<Category | null> {
-  const categories =
-    await getCategories();
+  const categories = await getCategories();
 
   return (
-    categories.find(
-      (item) =>
-        item.slug === slug
-    ) ?? null
+    categories.find((item) => item.slug === slug) ?? null
   );
 }
