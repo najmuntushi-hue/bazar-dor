@@ -22,9 +22,7 @@ export default function Navbar({
 
     const query = search.trim();
 
-    if (!query) {
-      return;
-    }
+    if (!query) return;
 
     router.push(`/search?q=${encodeURIComponent(query)}`);
   }
@@ -37,10 +35,15 @@ export default function Navbar({
         <Link
           href="/"
           className="flex shrink-0 items-center gap-3"
+          aria-label="বাজার দর হোমপেজ"
         >
-          <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-xl">
-            🛒
-          </span>
+          <img
+            src="/logo-icon.png"
+            alt="Bazar Dor Logo"
+            width={44}
+            height={44}
+            className="h-11 w-11 rounded-xl object-contain"
+          />
 
           <span className="leading-tight">
             <span className="block text-xl font-bold">
@@ -59,16 +62,20 @@ export default function Navbar({
         {/* Search */}
         <form
           onSubmit={handleSearch}
+          role="search"
           className="order-3 flex w-full flex-1 md:order-2 md:max-w-md"
         >
           <div className="flex w-full items-center overflow-hidden rounded-xl border border-base-300 bg-base-100 focus-within:border-primary">
-            <span className="px-3 text-lg">🔎</span>
+            <span className="px-3 text-lg" aria-hidden="true">
+              🔎
+            </span>
 
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="পণ্যের নাম লিখে খুঁজুন..."
+              aria-label="পণ্যের নাম লিখে খুঁজুন"
               className="w-full bg-transparent px-1 py-2.5 text-sm outline-none"
             />
 
@@ -88,7 +95,10 @@ export default function Navbar({
       </div>
 
       {/* Category Navigation */}
-      <nav className="border-t border-base-300">
+      <nav
+        aria-label="পণ্যের ক্যাটাগরি"
+        className="border-t border-base-300"
+      >
         <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2">
           {categories.map((c) => {
             const href = `/category/${c.slug}`;
@@ -98,13 +108,14 @@ export default function Navbar({
               <li key={c.slug}>
                 <Link
                   href={href}
+                  aria-current={active ? "page" : undefined}
                   className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition ${
                     active
                       ? "bg-primary font-semibold text-primary-content"
                       : "hover:bg-secondary"
                   }`}
                 >
-                  <span>{c.emoji}</span>
+                  <span aria-hidden="true">{c.emoji}</span>
                   {c.name}
                 </Link>
               </li>
