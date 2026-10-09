@@ -1,9 +1,15 @@
+
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
 import { user, session, account, verification } from "./schema";
 
 export const auth = betterAuth({
+  secret: process.env.BETTER_AUTH_SECRET,
+
+  baseURL:
+    process.env.BETTER_AUTH_URL || "http://localhost:3000",
+
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {
@@ -36,6 +42,4 @@ export const auth = betterAuth({
       trustedProviders: ["google", "github"],
     },
   },
-
-  baseURL: "http://localhost:3000",
 });
