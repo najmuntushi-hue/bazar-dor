@@ -14,7 +14,6 @@ export const auth = betterAuth({
 
   trustedOrigins: [
     "http://localhost:3000",
-    "https://bazar-inhhymct4-najmuntushi-hue.vercel.app",
     "https://bazar-dor-liart.vercel.app",
   ],
 
